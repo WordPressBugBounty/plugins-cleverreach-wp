@@ -1,10 +1,12 @@
 === CleverReach® WP ===
 Contributors: cleverreach43
-Tags: newsletter, email, email marketing tool, newsletter marketing, software, marketing automation, integration, email automation, follow up newsletter
+Tags: newsletter, email marketing tool, marketing automation, integration, email automation
 Requires at least: 4.9
-Tested up to: 6.5.2
+Tested up to: 6.8.2
 Requires PHP: 5.3
-Stable tag: 1.5.20
+Stable tag: 1.5.21
+License: GPLv2
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Connect your WordPress account with our easy-to-use email software and increase the success of your website or blog with newsletter marketing!
 
@@ -59,6 +61,14 @@ CleverReach® is one of the leading providers for email marketing and impresses 
 8. Welcome to our Email Marketing Solution
 
 == Changelog ==
+
+** Updates**
+
+- Fix SQL injection vulnerability in article search
+
+#### 1.5.21 - August 7 2025
+
+** Updates**
 
 #### 1.5.20 - March 15, 2023
 

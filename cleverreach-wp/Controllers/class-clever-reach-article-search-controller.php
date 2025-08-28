@@ -157,6 +157,7 @@ class Clever_Reach_Article_Search_Controller extends Clever_Reach_Base_Controlle
 	 * @return array
 	 */
 	private function search() {
+		global $wpdb;
 		$filters = array( "post_type IN ('post', 'page')" );
 
 		$id = $this->get_param( 'id' );
@@ -166,7 +167,8 @@ class Clever_Reach_Article_Search_Controller extends Clever_Reach_Base_Controlle
 
 		$title = $this->get_param( 'title' );
 		if ( ! empty( $title ) ) {
-			$filters[] = "post_title LIKE '%$title%'";
+			$safe_title = $wpdb->esc_like( sanitize_text_field( $title ) );
+			$filters[]  = $wpdb->prepare( 'post_title LIKE %s', '%' . $safe_title . '%' );
 		}
 
 		$articles = $this->get_search_results_provider()->get_standard_article_search_results( $filters );
