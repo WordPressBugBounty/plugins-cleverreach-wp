@@ -156,7 +156,7 @@ class Base_Repository_Legacy {
 	 * @return string
 	 */
 	protected function escape( $value ) {
-		return addslashes( $value );
+		return $this->db->_real_escape( $value );
 	}
 
 	/**
@@ -244,9 +244,23 @@ class Base_Repository_Legacy {
 
 		$sort = array();
 		foreach ( $order_by as $key => $order ) {
-			$sort[] = "`$key` $order";
+			$key   = preg_replace( '/[^a-zA-Z0-9_]/', '', $key );
+			$order = $this->validate_order_direction( $order );
+			$sort[] = "`{$key}` {$order}";
 		}
 
 		return ' ORDER BY ' . implode( ', ', $sort );
+	}
+
+	/**
+	 * Validates and sanitizes ORDER BY direction.
+	 *
+	 * @param string $direction Sort direction.
+	 *
+	 * @return string Validated direction (ASC or DESC).
+	 */
+	protected function validate_order_direction( $direction ) {
+		$direction = strtoupper( $direction );
+		return in_array( $direction, array( 'ASC', 'DESC' ), true ) ? $direction : 'ASC';
 	}
 }

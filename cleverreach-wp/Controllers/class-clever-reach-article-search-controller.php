@@ -160,9 +160,14 @@ class Clever_Reach_Article_Search_Controller extends Clever_Reach_Base_Controlle
 		global $wpdb;
 		$filters = array( "post_type IN ('post', 'page')" );
 
-		$id = $this->get_param( 'id' );
-		if ( ! empty( $id ) ) {
-			$filters[] = "ID = $id";
+		$raw_id = $this->get_param('id');
+		if ($raw_id !== '' && !ctype_digit($raw_id)) {
+			wp_send_json_error(['message' => 'Invalid ID parameter'], 400);
+		}
+
+		$id = (int) $raw_id;
+		if ($id > 0) {
+			$filters[] = $wpdb->prepare('ID = %d', $id);
 		}
 
 		$title = $this->get_param( 'title' );

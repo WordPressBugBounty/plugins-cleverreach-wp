@@ -226,7 +226,7 @@ class Base_Repository implements RepositoryInterface {
 	 * @return string Escaped value.
 	 */
 	protected function escape( $value ) {
-		return addslashes( $value );
+		return $this->db->_real_escape( $value );
 	}
 
 	/**
@@ -327,12 +327,13 @@ class Base_Repository implements RepositoryInterface {
 		if ( $filter->getOrderByColumn() ) {
 			$this->validate_index_column( $filter->getOrderByColumn(), $field_index_map );
 			$order_index = 'id' === $filter->getOrderByColumn() ? 'id' : 'index_' . $field_index_map[ $filter->getOrderByColumn() ];
-			$query      .= " ORDER BY {$order_index} {$filter->getOrderDirection()}";
+			$query      .= ' ORDER BY ' . $order_index . ' ' . $this->validate_order_direction( $filter->getOrderDirection() );
 		}
 
 		if ( $filter->getLimit() ) {
 			$offset = (int) $filter->getOffset();
-			$query .= " LIMIT {$offset}, {$filter->getLimit()}";
+			$limit  = (int) $filter->getLimit();
+			$query .= " LIMIT {$offset}, {$limit}";
 		}
 
 		return $query;
@@ -428,6 +429,18 @@ class Base_Repository implements RepositoryInterface {
 		if ( 'id' !== $column && ! array_key_exists( $column, $index_map ) ) {
 			throw new QueryFilterInvalidParamException( __( 'Column is not id or index.', 'cleverreach-wp' ) );
 		}
+	}
+
+	/**
+	 * Validates and sanitizes ORDER BY direction.
+	 *
+	 * @param string $direction Sort direction.
+	 *
+	 * @return string Validated direction (ASC or DESC).
+	 */
+	protected function validate_order_direction( $direction ) {
+		$direction = strtoupper( $direction );
+		return in_array( $direction, array( 'ASC', 'DESC' ), true ) ? $direction : 'ASC';
 	}
 
 }

@@ -49,6 +49,44 @@ class Article_Repository extends Base_Repository_Legacy {
 	);
 
 	/**
+	 * Whitelist of allowed database field names for SQL queries.
+	 *
+	 * @var array
+	 */
+	static private $allowed_fields = array(
+		'ID',
+		'post_author',
+		'post_date',
+		'post_date_gmt',
+		'post_content',
+		'post_title',
+		'post_excerpt',
+		'post_status',
+		'comment_status',
+		'ping_status',
+		'post_password',
+		'post_name',
+		'to_ping',
+		'pinged',
+		'post_modified',
+		'post_modified_gmt',
+		'post_content_filtered',
+		'post_parent',
+		'guid',
+		'menu_order',
+		'post_type',
+		'post_mime_type',
+		'comment_count',
+		// Special fields handled separately.
+		'visibility',
+		'custom_field_name',
+		'post_format',
+		'category',
+		'post_tag',
+		'featured_image',
+	);
+
+	/**
 	 * Article_Repository constructor
 	 */
 	public function __construct() {
@@ -308,8 +346,9 @@ class Article_Repository extends Base_Repository_Legacy {
 	 */
 	private function get_content_possible_custom_field_names( $post_id = 0 ) {
 		$table_name           = $this->db->postmeta;
-		$limit                = apply_filters( 'postmeta_form_limit', 30 );
-		$post_id_where_clause = ! empty( $post_id ) ? "AND post_id = $post_id" : '';
+		$limit                = (int) apply_filters( 'postmeta_form_limit', 30 );
+		$post_id              = (int) $post_id;
+		$post_id_where_clause = ! empty( $post_id ) ? "AND post_id = {$post_id}" : '';
 
 		$sql = "SELECT DISTINCT meta_key
 			FROM $table_name
@@ -330,7 +369,7 @@ class Article_Repository extends Base_Repository_Legacy {
 	 * @return string
 	 */
 	private function build_where_clause( $filters, $type ) {
-		$where_clause   = 'post_type = "' . $type . '"';
+		$where_clause   = $this->db->prepare( 'post_type = %s', $type );
 		$post_ids_array = array();
 
 		$fields_for_getting_post_ids = array( 'custom_field_name', 'post_format', 'category', 'post_tag' );
@@ -338,8 +377,17 @@ class Article_Repository extends Base_Repository_Legacy {
 			$value     = $filter['value'];
 			$field     = array_key_exists( $filter['field'], self::$field_mapping ) ?
 				self::$field_mapping[ $filter['field'] ] : $filter['field'];
-			$condition = array_key_exists( $filter['condition'], self::$condition_mapping ) ?
-				self::$condition_mapping[ $filter['condition'] ] : $filter['condition'];
+
+			// Validate field name against whitelist to prevent SQL injection.
+			if ( ! in_array( $field, self::$allowed_fields, true ) ) {
+				continue;
+			}
+
+			// Validate condition - reject unknown conditions to prevent SQL injection.
+			if ( ! array_key_exists( $filter['condition'], self::$condition_mapping ) ) {
+				continue;
+			}
+			$condition = self::$condition_mapping[ $filter['condition'] ];
 
 			if ( 'itemCode' === $field ) {
 				continue;
@@ -381,7 +429,10 @@ class Article_Repository extends Base_Repository_Legacy {
 					$where_clause .= ' ' . Operators::AND_OPERATOR . ' ' . $where_clause_for_author;
 				}
 			} else {
-				$value         = 'LIKE' === $condition ? "%$value%" : $value;
+				// Escape LIKE clause wildcards to prevent wildcard injection.
+				if ( 'LIKE' === $condition ) {
+					$value = '%' . $this->db->esc_like( $value ) . '%';
+				}
 				$where_clause .= ' ' . Operators::AND_OPERATOR . ' ' . $field . ' ' . $condition . ' ' . $this->escape_value( $value );
 			}
 		}
@@ -393,6 +444,8 @@ class Article_Repository extends Base_Repository_Legacy {
 				$post_ids = array_intersect( $post_ids, $post_ids_element );
 			}
 
+			// Ensure all IDs are integers to prevent SQL injection.
+			$post_ids      = array_map( 'intval', $post_ids );
 			$where_clause .= ' ' . Operators::AND_OPERATOR . ' ID IN (' . implode( ',', $post_ids ) . ')';
 		}
 
@@ -436,9 +489,9 @@ class Article_Repository extends Base_Repository_Legacy {
 	 */
 	private function get_where_clause_for_author( $condition, $value ) {
 		$author = get_user_by( 'login', $value );
-		$id     = ! empty( $author ) ? $author->ID : 0;
+		$id     = ! empty( $author ) ? (int) $author->ID : 0;
 
-		return ! empty( $id ) ? "post_author $condition $id" : '';
+		return ! empty( $id ) ? "post_author {$condition} {$id}" : '';
 	}
 
 	/**
@@ -452,10 +505,16 @@ class Article_Repository extends Base_Repository_Legacy {
 	 */
 	private function get_post_or_page_ids_for_custom_field_name( $type, $custom_field_name, $condition ) {
 		$postmeta_table_name = $this->db->postmeta;
-		$sql                 = "SELECT post_id FROM $postmeta_table_name WHERE meta_key = '$custom_field_name'";
+		$sql                 = $this->db->prepare(
+			"SELECT post_id FROM {$postmeta_table_name} WHERE meta_key = %s",
+			$custom_field_name
+		);
 
 		if ( $condition === self::$condition_mapping[ Conditions::NOT_EQUAL ] ) {
-			$sql = "SELECT ID FROM $this->table_name WHERE ID NOT IN ($sql) AND post_type = '$type' GROUP BY ID";
+			$sql = $this->db->prepare(
+				"SELECT ID FROM {$this->table_name} WHERE ID NOT IN ({$sql}) AND post_type = %s GROUP BY ID",
+				$type
+			);
 		}
 
 		return $this->db->get_col( $sql );

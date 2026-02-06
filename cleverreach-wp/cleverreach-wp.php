@@ -9,7 +9,7 @@
 Plugin Name: CleverReach® WP
 Plugin URI: https://wordpress.org/plugins/cleverreach-wp/
 Description: Spotify, Levi’s and DHL create and send their newsletters with CleverReach®: easy to handle and at the same time all requirements for professional email marketing.
-Version: 1.5.21
+Version: 1.5.23
 Author: CleverReach GmbH & Co. KG
 Author URI: https://www.cleverreach.com
 License: GPL

@@ -57,6 +57,7 @@ class Queue_Repository extends Base_Repository_Legacy {
 	 */
 	public function find_oldest_queued_items( $limit = 10 ) {
 		$queues_to_be_skipped = $this->find_running_queues();
+		$limit = (int) $limit;
 
 		$queued_status = QueueItem::QUEUED;
 		$result        = array();
@@ -74,7 +75,8 @@ class Queue_Repository extends Base_Repository_Legacy {
 			$additional_where = '';
 
 			if ( ! empty( $queues_to_be_skipped ) ) {
-				$queue_array      = implode( "','", $queues_to_be_skipped );
+				$escaped_queues   = array_map( array( $this->db, '_real_escape' ), $queues_to_be_skipped );
+				$queue_array      = implode( "','", $escaped_queues );
 				$additional_where = "AND queueName NOT IN ('{$queue_array}') ";
 			}
 
@@ -147,7 +149,8 @@ class Queue_Repository extends Base_Repository_Legacy {
 		$where_condition  = "WHERE `status` = '{$completed_status}'";
 
 		if ( ! empty( $exclude_types ) ) {
-			$where_condition .= " AND `type` NOT IN ('" . implode( "','", $exclude_types ) . "')";
+			$escaped_types    = array_map( array( $this->db, '_real_escape' ), $exclude_types );
+			$where_condition .= " AND `type` NOT IN ('" . implode( "','", $escaped_types ) . "')";
 		}
 
 		if ( $timestamp ) {
