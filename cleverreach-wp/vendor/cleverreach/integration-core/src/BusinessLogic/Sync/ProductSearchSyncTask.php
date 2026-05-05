@@ -12,6 +12,27 @@ use CleverReach\WordPress\IntegrationCore\Infrastructure\Logger\Logger;
 class ProductSearchSyncTask extends BaseSyncTask
 {
     /**
+     * @return array
+     * @throws \Exception
+     */
+    public function __serialize()
+    {
+        return array($this->serialize());
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return void
+     */
+    public function __unserialize(array $data)
+    {
+        if (!empty($data[0])) {
+            $this->unserialize($data[0]);
+        }
+    }
+
+    /**
      * Runs task execution.
      *
      * @throws \CleverReach\WordPress\IntegrationCore\Infrastructure\Exceptions\InvalidConfigurationException

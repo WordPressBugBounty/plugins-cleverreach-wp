@@ -16,6 +16,27 @@ class RegisterEventHandlerTask extends BaseSyncTask
     const GROUP_DELETED_EVENT = 'group.deleted';
 
     /**
+     * @return array
+     * @throws \Exception
+     */
+    public function __serialize()
+    {
+        return array($this->serialize());
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return void
+     */
+    public function __unserialize(array $data)
+    {
+        if (!empty($data[0])) {
+            $this->unserialize($data[0]);
+        }
+    }
+
+    /**
      * Runs task logic.
      *
      * @throws \CleverReach\WordPress\IntegrationCore\Infrastructure\Exceptions\InvalidConfigurationException

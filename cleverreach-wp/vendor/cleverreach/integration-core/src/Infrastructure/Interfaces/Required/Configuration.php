@@ -423,7 +423,8 @@ abstract class Configuration
     public function getUserInfo()
     {
         if (empty($this->userInfo)) {
-            $this->userInfo = json_decode($this->getConfigRepository()->get('CLEVERREACH_USER_INFO'), true);
+            $value = $this->getConfigRepository()->get('CLEVERREACH_USER_INFO');
+            $this->userInfo = json_decode($value ?: '{}', true) ?: array();
         }
 
         return $this->userInfo;
@@ -583,7 +584,8 @@ abstract class Configuration
      */
     public function getTaskRunnerStatus()
     {
-        return json_decode($this->getConfigRepository()->get('CLEVERREACH_TASK_RUNNER_STATUS'), true);
+        $value = $this->getConfigRepository()->get('CLEVERREACH_TASK_RUNNER_STATUS');
+        return json_decode($value ?: '{}', true) ?: array();
     }
 
     /**
@@ -768,8 +770,9 @@ abstract class Configuration
      */
     public function setHttpConfigurationOptions($domain, array $options)
     {
+        $value = $this->getConfigRepository()->get('httpConfigurationOptions');
+        $data = json_decode($value ?: '[]', true);
         // get all current options and append new ones for given domain
-        $data = json_decode($this->getConfigRepository()->get('httpConfigurationOptions', '[]'), true);
         $data[$domain] = array();
         foreach ($options as $option) {
             $data[$domain][] = $option->toArray();
@@ -787,7 +790,8 @@ abstract class Configuration
      */
     public function getHttpConfigurationOptions($domain)
     {
-        $data = json_decode($this->getConfigRepository()->get('httpConfigurationOptions', '[]'), true);
+        $value = $this->getConfigRepository()->get('httpConfigurationOptions');
+        $data = json_decode($value ?: '[]', true);
         if (isset($data[$domain])) {
             return Options::fromBatch($data[$domain]);
         }

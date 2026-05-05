@@ -59,6 +59,13 @@ abstract class HttpClient
     private $httpConfigurationOptions;
 
     /**
+     * Configuration service instance.
+     *
+     * @var Configuration
+     */
+    protected $configService;
+
+    /**
      * Create, log and send request.
      *
      * @param string $method HTTP method (GET, POST, PUT, DELETE etc.)

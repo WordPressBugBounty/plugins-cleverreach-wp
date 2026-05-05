@@ -80,7 +80,7 @@ class TaskRunnerStarter implements Runnable
      */
     public function serialize()
     {
-        return Serializer::serialize(array($this->guid));
+        return Serializer::serialize($this->__serialize());
     }
 
     /**
@@ -90,7 +90,7 @@ class TaskRunnerStarter implements Runnable
      */
     public function unserialize($serialized)
     {
-        list($this->guid) = Serializer::unserialize($serialized);
+        $this->__unserialize(Serializer::unserialize($serialized));
     }
 
     /**
@@ -112,6 +112,16 @@ class TaskRunnerStarter implements Runnable
     public function getGuid()
     {
         return $this->guid;
+    }
+
+    public function __serialize()
+    {
+        return array($this->guid);
+    }
+
+    public function __unserialize(array $data)
+    {
+        list($this->guid) = $data;
     }
 
     /**

@@ -4,7 +4,7 @@ Tags: newsletter, email marketing tool, marketing automation, integration, email
 Requires at least: 4.9
 Tested up to: 6.9
 Requires PHP: 5.3
-Stable tag: 1.5.23
+Stable tag: 1.5.24
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,13 @@ CleverReach® is one of the leading providers for email marketing and impresses 
 8. Welcome to our Email Marketing Solution
 
 == Changelog ==
+
+#### 1.5.24 - April 27 2026
+
+** Updates**
+
+- An issue has been fixed, where deprecated warnings related to Configuration.php and json_decode()
+handling of null/empty values
 
 #### 1.5.23 - January 28 2026
 

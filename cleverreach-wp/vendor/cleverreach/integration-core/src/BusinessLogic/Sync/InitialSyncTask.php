@@ -36,6 +36,18 @@ class InitialSyncTask extends CompositeTask
         parent::__construct($subTasks, $initialProgress);
     }
 
+    public function __serialize()
+    {
+        return array($this->serialize());
+    }
+
+    public function __unserialize(array $data)
+    {
+        if (!empty($data[0])) {
+            $this->unserialize($data[0]);
+        }
+    }
+
     /**
      * Returns progress by initial sync task groups:
      *

@@ -301,6 +301,31 @@ class TagCollection implements \Iterator, \Countable, Serializable
     }
 
     /**
+     * Internal. Do not use directly.
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function __serialize()
+    {
+        return array($this->serialize());
+    }
+
+    /**
+     * Internal. Do not use directly.
+     *
+     * @param array $data
+     *
+     * @return void
+     */
+    public function __unserialize(array $data)
+    {
+        if (!empty($data[0])) {
+            $this->unserialize($data[0]);
+        }
+    }
+
+    /**
      * Returns tags.
      *
      * @return \CleverReach\WordPress\IntegrationCore\BusinessLogic\Entity\AbstractTag[]

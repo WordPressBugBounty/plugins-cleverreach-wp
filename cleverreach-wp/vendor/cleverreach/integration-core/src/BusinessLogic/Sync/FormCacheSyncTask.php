@@ -54,6 +54,27 @@ class FormCacheSyncTask extends BaseSyncTask
     private $formRepository;
 
     /**
+     * @return array
+     * @throws \Exception
+     */
+    public function __serialize()
+    {
+        return array($this->serialize());
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return void
+     */
+    public function __unserialize(array $data)
+    {
+        if (!empty($data[0])) {
+            $this->unserialize($data[0]);
+        }
+    }
+
+    /**
      * @inheritDoc
      *
      * @throws InvalidConfigurationException
