@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased](https://github.com/cleverreach/logeecore/compare/v1.15.0...dev)
 
+## [v1.15.2](https://github.com/cleverreach/logeecore/compare/v1.15.1...v1.15.2)
+- An issue has been fixed, where deprecated warnings related to handling of null/empty values were shown.
+
 ## [v1.15.1](https://github.com/cleverreach/logeecore/compare/v1.15.0...v1.15.1)
 - Fix json_decode null handling for HTTP configuration options
 

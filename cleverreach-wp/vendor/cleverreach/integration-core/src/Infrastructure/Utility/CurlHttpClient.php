@@ -156,7 +156,9 @@ class CurlHttpClient extends HttpClient
             $this->logCurlError($statusCode, $result);
         }
 
-        curl_close($this->curlSession);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($this->curlSession);
+        }
 
         return $result;
     }

@@ -31,6 +31,23 @@ class ScheduleCheckTask extends Task
     private $repository;
 
     /**
+     * @return array
+     */
+    public function __serialize()
+    {
+        return array();
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return void
+     */
+    public function __unserialize(array $data)
+    {
+    }
+
+    /**
      * Runs task logic.
      *
      * @throws RepositoryNotRegisteredException

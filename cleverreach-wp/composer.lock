@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ed8b60a73aa45da826232eec2c795c3a",
+    "content-hash": "620d1f2c4dffcf82be87417162e1fc00",
     "packages": [
         {
             "name": "cleverreach/integration-core",
-            "version": "v1.15.1",
+            "version": "v1.15.2",
             "source": {
                 "type": "git",
                 "url": "git@github.com:cleverreach/logeecore.git",
-                "reference": "b05504bf91f8228eed64af8d0eb5465f2cff5e8c"
+                "reference": "bd3fdcc3e520517642d40234c0c31c6d6fd6689d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cleverreach/logeecore/zipball/b05504bf91f8228eed64af8d0eb5465f2cff5e8c",
-                "reference": "b05504bf91f8228eed64af8d0eb5465f2cff5e8c",
+                "url": "https://api.github.com/repos/cleverreach/logeecore/zipball/bd3fdcc3e520517642d40234c0c31c6d6fd6689d",
+                "reference": "bd3fdcc3e520517642d40234c0c31c6d6fd6689d",
                 "shasum": ""
             },
             "require": {
@@ -53,7 +53,7 @@
                 "proprietary"
             ],
             "description": "CleverReach integrations core library",
-            "time": "2026-05-04T14:41:01+00:00"
+            "time": "2026-05-13T08:03:24+00:00"
         }
     ],
     "packages-dev": [

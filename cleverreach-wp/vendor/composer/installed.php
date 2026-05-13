@@ -11,12 +11,12 @@
     ),
     'versions' => array(
         'cleverreach/integration-core' => array(
-            'pretty_version' => 'v1.15.1',
-            'version' => '1.15.1.0',
+            'pretty_version' => 'v1.15.2',
+            'version' => '1.15.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../cleverreach/integration-core',
             'aliases' => array(),
-            'reference' => 'b05504bf91f8228eed64af8d0eb5465f2cff5e8c',
+            'reference' => 'bd3fdcc3e520517642d40234c0c31c6d6fd6689d',
             'dev_requirement' => false,
         ),
         'cleverreach/wordpress' => array(

@@ -170,7 +170,7 @@ if ( ! $config[ 'isInitialSyncTaskFailed' ] ) {
 		let triggerType = '<?php echo esc_attr( $config[ 'triggerType' ] ); ?>',
 			surveyUrl = '<?php echo esc_url( $config[ 'surveyUrl' ] ); ?>',
 			ignoreSurveyUrl = '<?php echo esc_url( $config[ 'ignoreSurveyUrl' ] ); ?>',
-			notificationFlagUrl = '<?php echo esc_url( $config[ 'notificationFlagUrl' ] ); ?>',
+			notificationFlagUrl = '<?php echo esc_url( isset( $config[ 'notificationFlagUrl' ] ) ? $config[ 'notificationFlagUrl' ] : '' ); ?>',
 			surveyController = new CleverReach.Survey.SurveyController();
 
 		surveyController.init(triggerType, surveyUrl, ignoreSurveyUrl, notificationFlagUrl);
