@@ -4,7 +4,7 @@ Tags: newsletter, email marketing tool, marketing automation, integration, email
 Requires at least: 4.9
 Tested up to: 6.9
 Requires PHP: 5.3
-Stable tag: 1.5.25
+Stable tag: 1.5.26
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,14 @@ CleverReach® is one of the leading providers for email marketing and impresses 
 8. Welcome to our Email Marketing Solution
 
 == Changelog ==
+
+#### 1.5.26 - September 7 2026
+
+** Updates**
+
+- Resolved an issue where Double Opt-In (DOI) forms were disabled in Contact Form 7 integration due to missing
+taxes_id user data. Added taxes_id to the list of optional profile fields to restore proper DOI form selection
+and delivery.
 
 #### 1.5.25 - May 8 2026
 

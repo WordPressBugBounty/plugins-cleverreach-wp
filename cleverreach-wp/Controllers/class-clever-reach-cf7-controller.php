@@ -50,7 +50,8 @@ class Clever_Reach_CF7_Controller {
 	 * @var array
 	 */
 	private static $cleverreach_not_required_user_data = array(
-		'fax'
+		'fax',
+		'taxes_id'
 	);
 
 	/**
