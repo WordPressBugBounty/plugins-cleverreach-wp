@@ -61,7 +61,13 @@ var CleverReach = window['CleverReach'] || {};
 		},
 
 		post: function (url, data, callback, format, async) {
-			var query = [];
+			var query    = [];
+			var settings = window['crSettings'] || {};
+
+			if (settings.cr_nonce) {
+				query.push( '_cr_nonce=' + encodeURIComponent( settings.cr_nonce ) );
+			}
+
 			for (var key in data) {
 				if (data.hasOwnProperty( key )) {
 					query.push( encodeURIComponent( key ) + '=' + encodeURIComponent( data[key] ) );

@@ -46,7 +46,7 @@ class Clever_Reach_Frontend_Controller extends Clever_Reach_Base_Controller {
 	const CLEVERREACH_HELP_URL = 'https://support.cleverreach.de/hc/en-us';
 	const CLEVERREACH_DASHBOARD_URL = '/admin';
 	const CLEVERREACH_GDPR_URL = 'https://www.cleverreach.com/en/features/privacy-security/eu-general-data-protection-regulation-gdpr/';
-	const SCRIPT_VERSION = 9;
+	const SCRIPT_VERSION = 10;
 
 	/**
 	 * Configuration service
@@ -75,6 +75,17 @@ class Clever_Reach_Frontend_Controller extends Clever_Reach_Base_Controller {
 	 * @var string
 	 */
 	private $page;
+
+	/**
+	 * Actions that change state. They are accepted only via POST with a valid nonce.
+	 *
+	 * @var array
+	 */
+	protected $state_changing_actions = array(
+		'build_first_email',
+		'set_initial_sync_settings',
+		'retry_sync',
+	);
 
 	/**
 	 * CleverReachFrontendController constructor
@@ -440,6 +451,12 @@ class Clever_Reach_Frontend_Controller extends Clever_Reach_Base_Controller {
 	 */
 	private function load_js() {
 		$base_url = Helper::get_clever_reach_base_url( '/resources/' );
+		wp_add_inline_script(
+			'wp_cr_ajax',
+			'window.crSettings = window.crSettings || {};'
+			. 'window.crSettings.cr_nonce = ' . wp_json_encode( wp_create_nonce( self::NONCE_ACTION ) ) . ';',
+			'before'
+		);
 		wp_enqueue_script(
 			'wp_cr_authorization',
 			esc_url( $base_url . 'js/cleverreach.authorization.js' ),

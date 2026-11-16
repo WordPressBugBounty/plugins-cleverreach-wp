@@ -23,7 +23,7 @@
             },
             "time": "2026-05-13T08:03:24+00:00",
             "type": "library",
-            "installation-source": "dist",
+            "installation-source": "source",
             "autoload": {
                 "psr-4": {
                     "CleverReach\\BusinessLogic\\": "src/BusinessLogic",

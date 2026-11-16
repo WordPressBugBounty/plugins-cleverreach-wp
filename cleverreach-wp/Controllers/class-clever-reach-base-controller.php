@@ -15,11 +15,28 @@ namespace CleverReach\WordPress\Controllers;
 class Clever_Reach_Base_Controller {
 
 	/**
+	 * Nonce action used to protect state-changing requests against CSRF.
+	 */
+	const NONCE_ACTION = 'cr_save_actions';
+
+	/**
+	 * Request parameter that carries the nonce.
+	 */
+	const NONCE_PARAM = '_cr_nonce';
+
+	/**
 	 * Is request internal
 	 *
 	 * @var bool
 	 */
 	protected $is_internal = true;
+
+	/**
+	 * Actions that change state. They are accepted only via POST with a valid nonce.
+	 *
+	 * @var array
+	 */
+	protected $state_changing_actions = array();
 
 	/**
 	 * Processes request. Reads 'action' parameter and calls action method if provided
@@ -36,7 +53,11 @@ class Clever_Reach_Base_Controller {
 		}
 
 		if ( $action ) {
-			if ( method_exists( $this, $action ) ) {
+			if ( $this->is_action_callable( $action ) ) {
+				if ( $this->is_internal && in_array( $action, $this->state_changing_actions, true ) ) {
+					$this->validate_state_changing_call();
+				}
+
 				$this->$action();
 			} else {
 				$this->die_json( array( 'error' => "Method $action does not exist!" ) );
@@ -45,14 +66,65 @@ class Clever_Reach_Base_Controller {
 	}
 
 	/**
-	 * Validates if call made from plugin code is secure by checking session token
-	 * If call is not secure, returns 401 status and terminates request.
+	 * Validates that the request comes from a logged-in user with the required capability.
+	 * Redirects anonymous users to the login page and returns 403 for users without the capability.
 	 */
 	protected function validate_internal_call() {
-		$logged_user_id = get_current_user_id();
-		if ( empty( $logged_user_id ) ) {
+		if ( ! is_user_logged_in() ) {
 			auth_redirect();
 		}
+
+		if ( ! current_user_can( $this->get_required_capability() ) ) {
+			$this->die_with_status( 403 );
+		}
+	}
+
+	/**
+	 * Returns capability required to access internal controller actions.
+	 *
+	 * @return string
+	 */
+	protected function get_required_capability() {
+		return 'manage_options';
+	}
+
+	/**
+	 * Validates that a state-changing request is sent via POST and carries a valid nonce.
+	 * Returns 405 for non-POST requests and 403 for a missing or invalid nonce.
+	 */
+	protected function validate_state_changing_call() {
+		if ( ! $this->is_post() ) {
+			$this->die_with_status( 405 );
+		}
+
+		$nonce = isset( $_REQUEST[ self::NONCE_PARAM ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ self::NONCE_PARAM ] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, self::NONCE_ACTION ) ) {
+			$this->die_with_status( 403 );
+		}
+	}
+
+	/**
+	 * Checks whether action can be dispatched from request. Only public, non-static methods
+	 * without required arguments, declared in a concrete controller, are allowed. This prevents
+	 * invoking private helpers (e.g. Config::reset_token), constructors and base controller
+	 * methods (e.g. process) directly via the action parameter.
+	 *
+	 * @param string $action Action name.
+	 *
+	 * @return bool
+	 */
+	private function is_action_callable( $action ) {
+		if ( ! method_exists( $this, $action ) ) {
+			return false;
+		}
+
+		$method = new \ReflectionMethod( $this, $action );
+
+		return $method->isPublic()
+			&& ! $method->isStatic()
+			&& ! $method->isConstructor()
+			&& 0 === $method->getNumberOfRequiredParameters()
+			&& __CLASS__ !== $method->getDeclaringClass()->getName();
 	}
 
 	/**

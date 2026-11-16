@@ -44,9 +44,14 @@ class Clever_Reach_Config_Controller extends Clever_Reach_Base_Controller {
 	 * Run config
 	 */
 	public function run() {
+		$is_update = $this->is_post();
+		if ( $is_update ) {
+			$this->validate_state_changing_call();
+		}
+
 		Task_Queue::wakeup();
 
-		if ( $this->is_post() ) {
+		if ( $is_update ) {
 			$result = $this->update();
 		} else {
 			$result = $this->get_config_parameters();
@@ -64,12 +69,15 @@ class Clever_Reach_Config_Controller extends Clever_Reach_Base_Controller {
 		$queue_repository = new Queue_Repository();
 		$all              = $queue_repository->find_all();
 
+		$product_search_parameters = $this->config_service->getProductSearchParameters();
+		unset( $product_search_parameters['password'] );
+
 		return array(
 			'integrationId'                      => $this->config_service->getIntegrationId(),
 			'integrationName'                    => $this->config_service->getIntegrationName(),
 			'minLogLevel'                        => $this->config_service->getMinLogLevel(),
 			'isProductSearchEnabled'             => $this->config_service->isProductSearchEnabled(),
-			'productSearchParameters'            => $this->config_service->getProductSearchParameters(),
+			'productSearchParameters'            => $product_search_parameters,
 			'recipientsSynchronizationBatchSize' => $this->config_service->getRecipientsSynchronizationBatchSize(),
 			'isDefaultLoggerEnabled'             => $this->config_service->isDefaultLoggerEnabled(),
 			'maxStartedTasksLimit'               => $this->config_service->getMaxStartedTasksLimit(),
@@ -83,8 +91,8 @@ class Clever_Reach_Config_Controller extends Clever_Reach_Base_Controller {
 			'webhookUrl'                         => $this->config_service->getCrEventHandlerURL(),
 			'logLocation'                        => Helper::get_log_file_download_url(),
 			'pluginActive'                       => Helper::is_plugin_enabled(),
-			'accessToken'                        => $this->config_service->getAccessToken(),
 			'queueItems'                         => wp_json_encode( $all ),
+			'nonce'                              => wp_create_nonce( self::NONCE_ACTION ),
 		);
 	}
 

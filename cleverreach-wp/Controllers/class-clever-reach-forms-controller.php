@@ -33,6 +33,16 @@ class Clever_Reach_Forms_Controller extends Clever_Reach_Base_Controller {
 	private $form_repository;
 
 	/**
+	 * Forms are fetched from the post editor (classic editor and Gutenberg block),
+	 * so users who can edit posts must have access, not only administrators.
+	 *
+	 * @return string
+	 */
+	protected function get_required_capability() {
+		return 'edit_posts';
+	}
+
+	/**
 	 * Returns all forms in json format
 	 *
 	 * @throws RepositoryNotRegisteredException
