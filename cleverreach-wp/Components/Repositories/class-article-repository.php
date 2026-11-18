@@ -49,6 +49,12 @@ class Article_Repository extends Base_Repository_Legacy {
 	);
 
 	/**
+	 * Restricts results to published articles without a password,
+	 * since article search is exposed outside of WordPress.
+	 */
+	const PUBLIC_ARTICLE_CONDITION = "(post_status = 'publish' AND post_password = '')";
+
+	/**
 	 * Whitelist of allowed database field names for SQL queries.
 	 *
 	 * @var array
@@ -312,6 +318,11 @@ class Article_Repository extends Base_Repository_Legacy {
 	 * @return array
 	 */
 	public function get_articles_by_id_and_title( $filters ) {
+		if ( empty( $filters ) ) {
+			return array();
+		}
+
+		$filters[]        = self::PUBLIC_ARTICLE_CONDITION;
 		$glue_for_implode = ' ' . Operators::AND_OPERATOR . ' ';
 		$where_clause     = implode( $glue_for_implode, $filters );
 
@@ -369,7 +380,7 @@ class Article_Repository extends Base_Repository_Legacy {
 	 * @return string
 	 */
 	private function build_where_clause( $filters, $type ) {
-		$where_clause   = $this->db->prepare( 'post_type = %s', $type );
+		$where_clause   = $this->db->prepare( 'post_type = %s', $type ) . ' ' . Operators::AND_OPERATOR . ' ' . self::PUBLIC_ARTICLE_CONDITION;
 		$post_ids_array = array();
 
 		$fields_for_getting_post_ids = array( 'custom_field_name', 'post_format', 'category', 'post_tag' );

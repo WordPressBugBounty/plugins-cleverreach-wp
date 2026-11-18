@@ -7,9 +7,12 @@
 
 namespace CleverReach\WordPress\Controllers;
 
+use CleverReach\WordPress\Components\InfrastructureServices\Config_Service;
 use CleverReach\WordPress\Components\Utility\Schema_Provider;
 use CleverReach\WordPress\Components\Utility\Search_Results_Provider;
 use CleverReach\WordPress\IntegrationCore\BusinessLogic\Utility\ArticleSearch\Conditions;
+use CleverReach\WordPress\IntegrationCore\Infrastructure\Interfaces\Required\Configuration;
+use CleverReach\WordPress\IntegrationCore\Infrastructure\ServiceRegister;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -41,6 +44,18 @@ class Clever_Reach_Article_Search_Controller extends Clever_Reach_Base_Controlle
 	 */
 	public function __construct() {
 		$this->is_internal = false;
+	}
+
+	/**
+	 * Processes request. Every action on this controller is publicly reachable,
+	 * so the request must carry the product search endpoint password.
+	 *
+	 * @param string $action Action to be called.
+	 */
+	public function process( $action = '' ) {
+		$this->validate_password();
+
+		parent::process( $action );
 	}
 
 	/**
@@ -210,6 +225,47 @@ class Clever_Reach_Article_Search_Controller extends Clever_Reach_Base_Controlle
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Terminates request with 401 if the password parameter does not match the stored product search password.
+	 */
+	private function validate_password() {
+		/**
+		 * Configuration service
+		 *
+		 * @var Config_Service $config_service
+		 */
+		$config_service    = ServiceRegister::getService( Configuration::CLASS_NAME );
+		$expected_password = (string) $config_service->getProductSearchEndpointPassword();
+		$password          = (string) $this->get_param( 'password' );
+
+		if ( '' === $expected_password || ! $this->is_equal_in_constant_time( $expected_password, $password ) ) {
+			$this->die_with_status( 401 );
+		}
+	}
+
+	/**
+	 * Compares two strings in constant time to prevent timing attacks.
+	 * Replacement for hash_equals(), which is not available before PHP 5.6.
+	 *
+	 * @param string $known_string String of known length to compare against.
+	 * @param string $user_string User-supplied string.
+	 *
+	 * @return bool
+	 */
+	private function is_equal_in_constant_time( $known_string, $user_string ) {
+		$known_length = strlen( $known_string );
+		if ( strlen( $user_string ) !== $known_length ) {
+			return false;
+		}
+
+		$result = 0;
+		for ( $i = 0; $i < $known_length; $i++ ) {
+			$result |= ord( $known_string[ $i ] ) ^ ord( $user_string[ $i ] );
+		}
+
+		return 0 === $result;
 	}
 
 	/**

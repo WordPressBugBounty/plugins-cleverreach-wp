@@ -4,7 +4,7 @@ Tags: newsletter, email marketing tool, marketing automation, integration, email
 Requires at least: 4.9
 Tested up to: 7.1.2
 Requires PHP: 5.3
-Stable tag: 1.5.27
+Stable tag: 1.5.28
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,15 +62,21 @@ CleverReach® is one of the leading providers for email marketing and impresses 
 
 == Changelog ==
 
+#### 1.5.28 - November 18 2026
+
+**Updates**
+
+- Improved article search: only published, non-password-protected content is returned, and requests are now validated.
+
 #### 1.5.27 - November 16 2026
 
-** Updates**
+**Updates**
 
 - This release includes general security hardening and stability improvements.
 
 #### 1.5.26 - September 7 2026
 
-** Updates**
+**Updates**
 
 - Resolved an issue where Double Opt-In (DOI) forms were disabled in Contact Form 7 integration due to missing
 taxes_id user data. Added taxes_id to the list of optional profile fields to restore proper DOI form selection
@@ -78,39 +84,39 @@ and delivery.
 
 #### 1.5.25 - May 8 2026
 
-** Updates**
+**Updates**
 
 - An issue has been fixed, where deprecated warnings related to handling of null/empty values were shown.
 
 #### 1.5.24 - April 27 2026
 
-** Updates**
+**Updates**
 
 - An issue has been fixed, where deprecated warnings related to Configuration.php and json_decode()
 handling of null/empty values
 
 #### 1.5.23 - January 28 2026
 
-** Updates**
+**Updates**
 
 - This release includes general security hardening and stability improvements.
 
 #### 1.5.22 - December 8 2025
 
-** Updates**
+**Updates**
 
 - Implemented stricter validation for the id parameter to ensure only valid numeric values are processed.
 This prevents unintended query behavior and improves overall robustness of the search functionality
 
 #### 1.5.21 - August 7 2025
 
-** Updates**
+**Updates**
 
 - Fix SQL injection vulnerability in article search
 
 #### 1.5.20 - March 15, 2023
 
-** Updates**
+**Updates**
 
 - Add compatibility for system versions after 5.8
 
